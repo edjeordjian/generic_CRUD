@@ -1,0 +1,752 @@
+-------------------------------------------------------------------------------------------------------------1---------------------------------------------------------------------------------------------------------------
+
+USE [Almacen]
+GO
+/****** Object:  StoredProcedure [dbo].[agregarProducto]    Script Date: 11/24/2014 21:12:41 ******/
+SET ANSI_NULLS ON
+
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+create procedure [dbo].[agregarProducto]
+@nombre varchar(50),
+@precioCompra money,
+@precioVenta money,
+@tipoStock varchar(2),
+@idProveedor int
+as
+begin
+insert into productos
+values(@nombre,@precioCompra,@precioVenta,0,@tipoStock,@idProveedor)
+end
+
+-------------------------------------------------------------------------------------------------------------2---------------------------------------------------------------------------------------------------------------
+
+USE [Almacen]
+GO
+/****** Object:  StoredProcedure [dbo].[agregarProveedor]    Script Date: 11/24/2014 21:12:59 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+create procedure [dbo].[agregarProveedor]
+@nombre varchar(50),
+@telefono varchar(25),
+@calleDom varchar(25),
+@alturaDom int,
+@pisoDom int,
+@deptoDom varchar(25),
+@especialidad varchar(50)
+as 
+begin
+insert into Proveedores
+values(@nombre,@telefono,@calleDom,@alturaDom,@pisoDom,@deptoDom,@especialidad)
+end
+
+-------------------------------------------------------------------------------------------------------------3---------------------------------------------------------------------------------------------------------------
+
+
+USE [Almacen]
+GO
+/****** Object:  StoredProcedure [dbo].[ajustarPreciosProductosA]    Script Date: 11/24/2014 21:13:43 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+create procedure [dbo].[ajustarPreciosProductosA]
+@porcentaje float
+as
+begin
+
+update Productos
+set precio_venta=precio_venta + ( precio_venta * (@porcentaje/100) )
+
+end
+
+-------------------------------------------------------------------------------------------------------------4---------------------------------------------------------------------------------------------------------------
+
+USE [Almacen]
+GO
+/****** Object:  StoredProcedure [dbo].[aumentarStockProductos]    Script Date: 11/24/2014 21:14:52 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+create procedure [dbo].[aumentarStockProductos]
+@id_producto int,
+@stockMas int
+as
+begin
+update Productos
+set stock=stock+@stockMas
+where id_producto=@id_producto
+end
+
+-------------------------------------------------------------------------------------------------------------5---------------------------------------------------------------------------------------------------------------
+
+USE [Almacen]
+GO
+/****** Object:  StoredProcedure [dbo].[borrarCompra]    Script Date: 11/24/2014 21:15:13 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+create procedure [dbo].[borrarCompra]
+@id_compra int
+as
+begin
+
+update Productos
+set stock=stock-b.cantidad
+from Productos as a
+inner join productosXcompra as b
+on b.id_producto=a.id_producto
+where b.id_compra=@id_compra
+
+delete Compras
+from Compras
+where id_compra=@id_compra
+
+delete ProductosXcompra
+from ProductosXcompra
+where id_compra=@id_compra
+
+end
+
+-------------------------------------------------------------------------------------------------------------6---------------------------------------------------------------------------------------------------------------
+
+USE [Almacen]
+GO
+/****** Object:  StoredProcedure [dbo].[borrarCompraRegistro]    Script Date: 11/24/2014 21:15:26 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+create procedure [dbo].[borrarCompraRegistro]
+@id_compra int
+as
+begin
+
+delete Compras
+from Compras
+where id_compra=@id_compra
+
+delete ProductosXcompra
+from ProductosXcompra
+where id_compra=@id_compra
+
+end
+
+-------------------------------------------------------------------------------------------------------------7---------------------------------------------------------------------------------------------------------------
+
+USE [Almacen]
+GO
+/****** Object:  StoredProcedure [dbo].[borrarProducto]    Script Date: 11/24/2014 21:15:56 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+create procedure [dbo].[borrarProducto]
+@id_producto int
+as
+begin
+delete Productos 
+from Productos
+where id_producto=@id_producto
+end
+
+
+-------------------------------------------------------------------------------------------------------------8---------------------------------------------------------------------------------------------------------------
+
+USE [Almacen]
+GO
+/****** Object:  StoredProcedure [dbo].[borrarProveedor]    Script Date: 11/24/2014 21:16:52 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+create procedure [dbo].[borrarProveedor]
+@id_proveedor int
+as
+begin
+delete Proveedores
+where id_proveedor=@id_proveedor
+end
+
+-------------------------------------------------------------------------------------------------------------9---------------------------------------------------------------------------------------------------------------
+
+USE [Almacen]
+GO
+/****** Object:  StoredProcedure [dbo].[borrarVenta]    Script Date: 11/24/2014 21:19:47 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+create procedure [dbo].[borrarVenta]
+@id_venta int
+as
+begin
+
+update Productos
+set stock=stock+b.cantidad
+from Productos as a
+inner join productosXventa as b
+on b.id_producto=a.id_producto
+where b.id_venta=@id_venta
+
+delete ventas
+from ventas
+where id_venta=@id_venta
+
+delete ProductosXventa
+from ProductosXventa
+where id_venta=@id_venta
+
+end
+
+
+-----------------------------------------------------------------------------------------------------------10---------------------------------------------------------------------------------------------------------------
+
+USE [Almacen]
+GO
+/****** Object:  StoredProcedure [dbo].[borrarVentaRegistro]    Script Date: 11/24/2014 21:20:46 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+create procedure [dbo].[borrarVentaRegistro]
+@id_venta int
+as
+begin
+
+delete ventas
+from ventas
+where id_venta=@id_venta
+
+delete ProductosXventa
+from ProductosXventa
+where id_venta=@id_venta
+
+end
+
+
+-----------------------------------------------------------------------------------------------------------11---------------------------------------------------------------------------------------------------------------
+
+USE [Almacen]
+GO
+/****** Object:  StoredProcedure [dbo].[devolverIdUltimoProveedor]    Script Date: 11/24/2014 21:21:25 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+create procedure [dbo].[devolverIdUltimoProveedor]
+as
+begin
+select top 1 id_proveedor
+from Proveedores 
+order by id_proveedor desc
+end
+
+-----------------------------------------------------------------------------------------------------------12---------------------------------------------------------------------------------------------------------------
+
+USE [Almacen]
+GO
+/****** Object:  StoredProcedure [dbo].[disminuirStockProductos]    Script Date: 11/24/2014 21:21:51 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+create PROCEDURE [dbo].[disminuirStockProductos]
+@id_producto int,
+@stockMenos int
+AS
+BEGIN
+	SET NOCOUNT ON;
+update Productos
+set stock=stock-@stockMenos
+where id_producto=@id_producto
+END
+
+-----------------------------------------------------------------------------------------------------------13---------------------------------------------------------------------------------------------------------------
+
+USE [Almacen]
+GO
+/****** Object:  StoredProcedure [dbo].[idProveedorConNombre]    Script Date: 11/24/2014 21:22:16 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+create procedure [dbo].[idProveedorConNombre]
+@nombre varchar(50)
+as
+begin
+select top 1 id_proveedor
+from Proveedores
+where nombre= @nombre
+end
+
+-----------------------------------------------------------------------------------------------------------14---------------------------------------------------------------------------------------------------------------
+
+USE [Almacen]
+GO
+/****** Object:  StoredProcedure [dbo].[ingresarCompra]    Script Date: 11/24/2014 21:22:43 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+create procedure [dbo].[ingresarCompra]
+@fecha varchar(10),
+@gasto float
+as
+begin
+insert into Compras
+values(@fecha,@gasto)
+end
+
+-----------------------------------------------------------------------------------------------------------15---------------------------------------------------------------------------------------------------------------
+
+USE [Almacen]
+GO
+/****** Object:  StoredProcedure [dbo].[ingresarProductosXCompra]    Script Date: 11/24/2014 21:23:18 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+create procedure [dbo].[ingresarProductosXCompra]
+@id_compra int,
+@id_producto int,
+@cantidad int,
+@precio_parcial money
+as
+begin
+insert into productosXCompra
+values(@id_compra,@id_producto,@cantidad,@precio_parcial)
+end
+
+-----------------------------------------------------------------------------------------------------------16---------------------------------------------------------------------------------------------------------------
+
+USE [Almacen]
+GO
+/****** Object:  StoredProcedure [dbo].[ingresarProductosXVenta]    Script Date: 11/24/2014 21:23:40 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+create PROCEDURE [dbo].[ingresarProductosXVenta]
+@id_venta int,
+@id_producto int,
+@cantidad int,
+@precio_parcial float
+AS
+BEGIN
+	SET NOCOUNT ON;
+insert into productosXVenta
+values(@id_venta,@id_producto,@cantidad,@precio_parcial)
+END
+
+-----------------------------------------------------------------------------------------------------------17---------------------------------------------------------------------------------------------------------------
+
+USE [Almacen]
+GO
+/****** Object:  StoredProcedure [dbo].[ingresarVenta]    Script Date: 11/24/2014 21:24:53 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+create PROCEDURE [dbo].[ingresarVenta]
+@fecha varchar(10),
+@gasto float
+AS
+BEGIN
+	SET NOCOUNT ON;
+	insert into Ventas
+	values(@fecha,@gasto)
+END
+
+
+-----------------------------------------------------------------------------------------------------------18---------------------------------------------------------------------------------------------------------------
+
+USE [Almacen]
+GO
+/****** Object:  StoredProcedure [dbo].[modificarCompra]    Script Date: 11/24/2014 21:25:17 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+create procedure [dbo].[modificarCompra]
+@id_compra int,
+@fecha varchar(10),
+@costo float
+as
+begin
+
+update Compras
+set fecha=@fecha
+where id_compra=@id_compra
+
+update Compras
+set gasto=@costo
+where id_compra=@id_compra
+
+
+end
+
+
+-----------------------------------------------------------------------------------------------------------19---------------------------------------------------------------------------------------------------------------
+
+USE [Almacen]
+GO
+/****** Object:  StoredProcedure [dbo].[modificarProducto]    Script Date: 11/24/2014 21:25:42 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+create procedure [dbo].[modificarProducto]
+@id_producto int,
+@nombre varchar(50),
+@precioCompra money,
+@precioVenta money,
+@tipoStock varchar(2),
+@idProveedor int,
+@stock float
+as
+begin
+
+update productos
+set nombre=@nombre
+where id_producto=@id_producto
+
+update productos
+set precio_compra=@precioCompra
+where id_producto=@id_producto
+
+update productos
+set precio_venta=@precioVenta
+where id_producto=@id_producto
+
+update productos
+set tipo_stock=@tipoStock
+where id_producto=@id_producto
+
+
+update Productos
+set id_proveedor=@idProveedor
+where id_producto=@id_producto
+
+update productos
+set stock=@stock
+where id_producto=@id_producto
+
+end
+
+-----------------------------------------------------------------------------------------------------------20---------------------------------------------------------------------------------------------------------------
+
+USE [Almacen]
+GO
+/****** Object:  StoredProcedure [dbo].[modificarProveedor]    Script Date: 11/24/2014 21:26:10 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+create procedure [dbo].[modificarProveedor]
+@id_proveedor int,
+@nombre varchar(50),
+@telefono varchar(25),
+@calleDomicilio varchar(25),
+@alturaDomicilio smallint,
+@pisoDomicilio tinyint,
+@departamentoDomicilio varchar(25),
+@especialidad varchar(50)
+as
+begin
+
+update Proveedores
+set nombre=@nombre
+where id_proveedor=@id_proveedor
+
+update Proveedores
+set telefono=@telefono
+where id_proveedor=@id_proveedor
+
+update Proveedores
+set calleDomicilio=@calleDomicilio
+where id_proveedor=@id_proveedor
+
+update Proveedores
+set alturaDomicilio=@alturaDomicilio
+where id_proveedor=@id_proveedor
+
+update Proveedores
+set pisoDomicilio=@pisoDomicilio
+where id_proveedor=@id_proveedor
+
+update Proveedores
+set departamentoDomicilio=@departamentoDomicilio
+where id_proveedor=@id_proveedor
+
+update Proveedores
+set especialidad=@especialidad
+where id_proveedor=@id_proveedor
+
+end 
+
+
+-----------------------------------------------------------------------------------------------------------21---------------------------------------------------------------------------------------------------------------
+
+USE [Almacen]
+GO
+/****** Object:  StoredProcedure [dbo].[modificarVenta]    Script Date: 11/24/2014 21:26:53 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+create procedure [dbo].[modificarVenta]
+@id_venta int,
+@fecha varchar(10),
+@ingreso money
+as
+begin
+
+update ventas
+set fecha=@fecha
+where id_venta=@id_venta
+
+update ventas
+set recaudacion=@ingreso
+where id_venta=@id_venta
+
+end
+
+-----------------------------------------------------------------------------------------------------------22---------------------------------------------------------------------------------------------------------------
+
+USE [Almacen]
+GO
+/****** Object:  StoredProcedure [dbo].[mostrarCompras]    Script Date: 11/24/2014 21:27:23 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+create procedure [dbo].[mostrarCompras]
+as
+begin
+select *
+from Compras
+end
+
+-----------------------------------------------------------------------------------------------------------23---------------------------------------------------------------------------------------------------------------
+
+USE [Almacen]
+GO
+/****** Object:  StoredProcedure [dbo].[mostrarNombresProveedores]    Script Date: 11/24/2014 21:27:50 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+create procedure [dbo].[mostrarNombresProveedores]
+as
+begin
+select nombre
+from proveedores
+order by nombre
+end
+
+-----------------------------------------------------------------------------------------------------------24---------------------------------------------------------------------------------------------------------------
+USE [Almacen]
+GO
+/****** Object:  StoredProcedure [dbo].[mostrarProductos]    Script Date: 11/24/2014 21:28:10 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+create procedure [dbo].[mostrarProductos]
+as
+begin
+select *
+from productos
+end
+
+-----------------------------------------------------------------------------------------------------------25---------------------------------------------------------------------------------------------------------------
+
+USE [Almacen]
+GO
+/****** Object:  StoredProcedure [dbo].[mostrarProductosAlfabeticamente]    Script Date: 11/24/2014 21:28:36 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+create procedure [dbo].[mostrarProductosAlfabeticamente]
+as
+begin
+select *
+from Productos
+order by nombre 
+end
+
+
+-----------------------------------------------------------------------------------------------------------26---------------------------------------------------------------------------------------------------------------
+
+USE [Almacen]
+GO
+/****** Object:  StoredProcedure [dbo].[mostrarProductosXCompraConId]    Script Date: 11/24/2014 21:29:17 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+create procedure [dbo].[mostrarProductosXCompraConId]
+@id_compra int
+as
+begin
+select b.*,a.precio_parcial,a.cantidad
+from ProductosXcompra as a
+inner join Productos as b
+on b.id_producto=a.id_producto
+where id_compra=@id_compra
+end
+
+
+-----------------------------------------------------------------------------------------------------------27---------------------------------------------------------------------------------------------------------------
+
+USE [Almacen]
+GO
+/****** Object:  StoredProcedure [dbo].[mostrarProductosXVentaConId]    Script Date: 11/24/2014 21:29:47 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+create procedure [dbo].[mostrarProductosXVentaConId]
+@id_venta int
+as
+begin
+select b.*,a.precio_parcial,a.cantidad
+from ProductosXventa as a
+inner join Productos as b
+on b.id_producto=a.id_producto
+where id_venta=@id_venta
+end
+
+-----------------------------------------------------------------------------------------------------------28---------------------------------------------------------------------------------------------------------------
+
+USE [Almacen]
+GO
+/****** Object:  StoredProcedure [dbo].[mostrarProveedores]    Script Date: 11/24/2014 21:30:26 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+create procedure [dbo].[mostrarProveedores]
+as
+begin
+select *
+from Proveedores
+end
+
+-----------------------------------------------------------------------------------------------------------29---------------------------------------------------------------------------------------------------------------
+
+
+USE [Almacen]
+GO
+/****** Object:  StoredProcedure [dbo].[mostrarProveedoresAlfabeticamente]    Script Date: 11/24/2014 21:30:40 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+create procedure [dbo].[mostrarProveedoresAlfabeticamente]
+as
+begin
+select *
+from Proveedores
+order by nombre 
+end
+
+-----------------------------------------------------------------------------------------------------------30---------------------------------------------------------------------------------------------------------------
+
+USE [Almacen]
+GO
+/****** Object:  StoredProcedure [dbo].[mostrarVentas]    Script Date: 11/24/2014 21:31:08 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+create procedure [dbo].[mostrarVentas]
+as
+begin
+select *
+from ventas
+end
+
+-----------------------------------------------------------------------------------------------------------31---------------------------------------------------------------------------------------------------------------
+
+USE [Almacen]
+GO
+/****** Object:  StoredProcedure [dbo].[nombreProveedorConId]    Script Date: 11/24/2014 21:31:28 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+create procedure [dbo].[nombreProveedorConId]
+@id_proveedor int
+as
+begin
+select top 1 nombre
+from proveedores 
+where id_proveedor=@id_proveedor
+end
+-----------------------------------------------------------------------------------------------------------32---------------------------------------------------------------------------------------------------------------
+
+USE [Almacen]
+GO
+/****** Object:  StoredProcedure [dbo].[proveedorConId]    Script Date: 11/24/2014 21:31:47 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+create procedure [dbo].[proveedorConId]
+@id_proveedor_producto int
+as
+begin
+select top 1 *
+from Proveedores as  a
+inner join Productos as b
+on b.id_proveedor=a.id_proveedor
+where b.id_proveedor=@id_proveedor_producto
+end
+
+-----------------------------------------------------------------------------------------------------------33---------------------------------------------------------------------------------------------------------------
+USE [Almacen]
+GO
+/****** Object:  StoredProcedure [dbo].[ultimaComrpaId]    Script Date: 11/24/2014 21:32:11 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+create procedure [dbo].[ultimaComrpaId]
+as
+begin
+select top 1 *
+from Compras
+order by id_compra desc
+end
+
+
+-----------------------------------------------------------------------------------------------------------34---------------------------------------------------------------------------------------------------------------
+USE [Almacen]
+GO
+/****** Object:  StoredProcedure [dbo].[ultimaVentaId]    Script Date: 11/24/2014 21:32:30 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+create PROCEDURE [dbo].[ultimaVentaId]
+AS
+BEGIN
+	SET NOCOUNT ON;
+	select top 1 *
+from Ventas
+order by id_venta desc
+END
