@@ -57,7 +57,7 @@ public class AgregarCompra extends JPanel
 		columnas.add("Nombre");
 		columnas.add("Cantidad");
 		columnas.add("Precio");
-		DefaultTableModel modelo_de_tabla_productos = new DefaultTableModel(new Vector<Object>(),columnas );// guardo las columnas	
+		DefaultTableModel modelo_de_tabla_productos = new DefaultTableModel(new Vector<>(),columnas );// guardo las columnas	
 		
 		JComboBox comboProductos = new JComboBox();
 		comboProductos.setBounds(35, 408, 421, 20);

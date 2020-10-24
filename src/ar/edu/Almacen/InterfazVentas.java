@@ -41,7 +41,7 @@ public class InterfazVentas extends JPanel
 			scrollPane.setBounds(26, 130, 751, 294);
 			add(scrollPane);
 			
-			DefaultTableModel modelo_tabla_ventas = new DefaultTableModel(new Vector<Object>(),columnas);// guardo las columnas
+			DefaultTableModel modelo_tabla_ventas = new DefaultTableModel(new Vector<>(),columnas);// guardo las columnas
 			
 			tablaVentas = new JTable(modelo_tabla_ventas);
 			scrollPane.setViewportView(tablaVentas);

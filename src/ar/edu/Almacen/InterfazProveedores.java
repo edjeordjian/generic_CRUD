@@ -42,7 +42,7 @@ public class InterfazProveedores extends JPanel
 		columnas.add("Departamento");
 		columnas.add("Especialidad");
 
-		DefaultTableModel modelo_de_tabla_proveedores = new DefaultTableModel(new Vector<Object>(),columnas);// guardo las columnas	
+		DefaultTableModel modelo_de_tabla_proveedores = new DefaultTableModel(new Vector<>(),columnas);// guardo las columnas	
 		
 		//tabla
 		JScrollPane scrollPane = new JScrollPane();

@@ -51,7 +51,7 @@ public class InterfazProductos extends JPanel
 		columnas.add("Tipo Stock");
 		columnas.add("Proveedor");
 
-		DefaultTableModel modelo_de_tabla_productos = new DefaultTableModel(new Vector<Object>(),columnas);// guardo las columnas	
+		DefaultTableModel modelo_de_tabla_productos = new DefaultTableModel(new Vector<>(),columnas);// guardo las columnas	
 		
 		//tabla
 		JScrollPane scrollPane = new JScrollPane();

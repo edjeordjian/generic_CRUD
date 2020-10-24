@@ -82,7 +82,7 @@ public class ModificarCompra extends JPanel
 		columnas.add("Cantidad");
 		columnas.add("Precio");
 		
-		DefaultTableModel modelo_de_tabla_productos = new DefaultTableModel(new Vector<Object>(),columnas );
+		DefaultTableModel modelo_de_tabla_productos = new DefaultTableModel(new Vector<>(),columnas );
 		
 		table = new JTable(modelo_de_tabla_productos);
 		scrollPane.setViewportView(table);

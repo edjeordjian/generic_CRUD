@@ -41,7 +41,7 @@ public InterfazCompras(JFrame ventanaUnica)
 		scrollPane.setBounds(26, 130, 751, 294);
 		add(scrollPane);
 		
-		DefaultTableModel modelo_tabla_compras = new DefaultTableModel(new Vector<Object>(),columnas);// guardo las columnas
+		DefaultTableModel modelo_tabla_compras = new DefaultTableModel(new Vector<>(),columnas);// guardo las columnas
 		
 		tablaCompras = new JTable(modelo_tabla_compras);
 		scrollPane.setViewportView(tablaCompras);
